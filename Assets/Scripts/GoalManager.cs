@@ -34,12 +34,12 @@ public class GoalManager : MonoBehaviour
             {
                 hasWinner = true;
                 int ID = player.ID;
-                if (ID == 0)
+                if (ID == 1)
                 {
                     SetWinText(playerOneText, "1P WIN");
                     playerOneText.SetActive(true);
                 }
-                else if (ID == 1)
+                else if (ID == 2)
                 {
                     SetWinText(playerTwoText, "2P WIN");
                     playerTwoText.SetActive(true);

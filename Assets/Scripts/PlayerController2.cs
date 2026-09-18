@@ -7,7 +7,7 @@ public class PlayerController2 : MonoBehaviour
     float moveSpeed = 5.0f;
     float rotateSpeed = 30.0f;
 
-    public int ID;
+    public int ID = 1;   // 1P = 1, 2P = 2
 
     KeyCode forwardKey;
     KeyCode backwardKey;
@@ -52,7 +52,7 @@ public class PlayerController2 : MonoBehaviour
     {
         currentHp = maxHp;
 
-        if(ID == 0)
+        if(ID == 1)
         {
             forwardKey = KeyCode.W;
             backwardKey = KeyCode.S;
@@ -61,7 +61,7 @@ public class PlayerController2 : MonoBehaviour
             runKey = KeyCode.LeftShift;
             attackKey = KeyCode.Space;
         }
-        else if (ID == 1)
+        else if (ID == 2)
         {
             forwardKey = KeyCode.UpArrow;
             backwardKey = KeyCode.DownArrow;
@@ -70,15 +70,11 @@ public class PlayerController2 : MonoBehaviour
             runKey = KeyCode.RightShift;
             attackKey = KeyCode.Return;
 
-            // タイトル画面で選択されたモード（1P vs AI / 1P vs 2P）を自動反映
-            isAI = (TitleScreenManager.SelectedMode == TitleScreenManager.GameMode.PvAI);
+            // isAI はインスペクターで設定した値をそのまま使用する。
+            // タイトル画面のモード選択で上書きしないため、車ごとにAIかどうかを決められる。
         }
 
-        if (hpSlider != null)
-        {
-            hpSlider.maxValue = maxHp;
-            hpSlider.value = currentHp;
-        }
+        UpdateHpUI();
     }
     void Update()
     { 
@@ -87,9 +83,7 @@ public class PlayerController2 : MonoBehaviour
             knockbackTimer -= Time.deltaTime;
             transform.Translate(knockbackVel * Time.deltaTime, Space.World);
 
-            if (hpSlider != null) hpSlider.value = currentHp;
-            if (hpText != null) hpText.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
-            if (hpTextMeshPro != null) hpTextMeshPro.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
+            UpdateHpUI();
             return;
         }
 
@@ -101,7 +95,8 @@ public class PlayerController2 : MonoBehaviour
 
         float currentSpeed = moveSpeed;
 
-        if (Input.GetKey(runKey) && currentHp > 0)
+        bool isMoving = Input.GetKey(forwardKey) != Input.GetKey(backwardKey);
+        if (Input.GetKey(runKey) && isMoving && currentHp > 0)
         {
             currentSpeed = runSpeed;
             currentHp -= hpDecreaseRate * Time.deltaTime;
@@ -133,20 +128,7 @@ public class PlayerController2 : MonoBehaviour
             transform.Rotate(0, -rotateSpeed * Time.deltaTime, 0);
         }
 
-        if (hpSlider != null)
-        {
-            hpSlider.value = currentHp;
-        }
-
-        if (hpText != null)
-        {
-            hpText.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
-        }
-
-        if (hpTextMeshPro != null)
-        {
-            hpTextMeshPro.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
-        }
+        UpdateHpUI();
 
         if (Input.GetKeyDown(attackKey))
         {
@@ -235,18 +217,7 @@ public class PlayerController2 : MonoBehaviour
             }
         }
 
-        if (hpSlider != null)
-        {
-            hpSlider.value = currentHp;
-        }
-        if (hpText != null)
-        {
-            hpText.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
-        }
-        if (hpTextMeshPro != null)
-        {
-            hpTextMeshPro.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
-        }
+        UpdateHpUI();
 
         if (aiAttackTimer > 0)
         {
@@ -279,5 +250,24 @@ public class PlayerController2 : MonoBehaviour
             }
         }
         return null;
+    }
+
+    private void UpdateHpUI()
+    {
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = maxHp;
+            hpSlider.value = currentHp;
+        }
+
+        if (hpText != null)
+        {
+            hpText.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
+        }
+
+        if (hpTextMeshPro != null)
+        {
+            hpTextMeshPro.text = string.Format("HP: {0:0} / {1:0}", currentHp, maxHp);
+        }
     }
 }
